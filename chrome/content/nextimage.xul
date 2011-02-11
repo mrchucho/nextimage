@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<overlay
+    id="nextImageOverlay"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <script type="application/x-javascript" src="chrome://nextimage/content/nextimage.js"/>
+   <script type="application/x-javascript">
+   <![CDATA[
+var NextImage = {
+    prefs: null,
+
+    startup: function() 
+    {
+		this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
+				.getService(Components.interfaces.nsIPrefService)
+				.getBranch("nextimage.");
+		this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
+		this.prefs.addObserver("", this, false);
+        this.setModifierKey();
+    },
+	shutdown: function()
+	{
+		this.prefs.removeObserver("", this);
+	},
+	observe: function(subject, topic, data)
+	{
+		if (topic != "nsPref:changed") {
+			return;
+		}
+        if(data == "modifier_key") {
+            this.setModifierKey();
+        }
+	},
+    setModifierKey: function()
+    {
+        var keyModifier = this.prefs.getCharPref("modifier_key")
+        if(keyModifier == "") {
+            keyModifier = this.setDefaultModifierKey();
+        }
+        var key = document.getElementById("key_nextimage");
+        key.setAttribute("modifiers",keyModifier);
+        key = document.getElementById("key_previmage");
+        key.setAttribute("modifiers",keyModifier);
+    },
+    setDefaultModifierKey: function()
+    {
+        var os = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULRuntime).OS; 
+        if(os == "WINNT") {
+            return "shift alt";
+        } else {
+            return "shift";
+        }
+    },
+    isDigit: function(c)
+    {
+        var c_num = parseInt(c);
+        return (0 <= c_num && c_num <= 9);
+    },
+    nextImage: function()
+    {
+        this.increment(1);
+    },
+    prevImage: function()
+    {
+        this.increment(-1);
+    },
+    increment: function(amount)
+    {
+        var e,s;
+        L = self._content.location.href;
+        LL = L.length;
+        for (e=LL-1; e>=0; --e)
+            if (this.isDigit(L.charAt(e)))
+            {
+                for(s=e-1; s>=0; --s)
+                    if (!this.isDigit(L.charAt(s)))
+                        break;
+                    break;
+            }
+            ++s;
+            if (e<0)
+                return;
+            oldNum = L.substring(s,e+1);
+            newNum = '' + (parseInt(oldNum,10) + amount);
+            while (newNum.length < oldNum.length)
+                newNum = '0' + newNum;
+            self._content.location.href = L.substring(0,s) + newNum + L.slice(e+1);
+    }
+}
+window.addEventListener("load", function(e) { NextImage.startup(); }, false);
+window.addEventListener("unload", function(e) { NextImage.shutdown(); }, false);
+   ]]>
+   </script>
+
+
+    <popup id="contentAreaContextMenu">
+        <menuseparator id="context-sep-nextimage"/>
+        <menuitem id="context-nextimage"
+            label="Open Next Image"
+            accesskey="N"
+            oncommand="NextImage.nextImage();"
+            disabled="false"
+        />
+        <menuitem id="context-previmage"
+            label="Open Previous Image"
+            accesskey="P"
+            oncommand="NextImage.prevImage();"
+            disabled="false"
+        />
+    </popup>
+    <keyset id="mainKeyset">
+        <key id="key_nextimage" keycode="VK_RIGHT" modifiers="" oncommand="NextImage.nextImage();" />
+        <key id="key_previmage" keycode="VK_LEFT" modifiers="" oncommand="NextImage.prevImage();" />
+    </keyset>
+</overlay>

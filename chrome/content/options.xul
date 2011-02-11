@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+ 
+<prefwindow id="nextimage-prefs"
+     title="Next Image Options"
+     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+ 
+<prefpane id="nextimage-prefs-pane" label="Key Bindings">
+  <preferences>
+    <preference id="modifier_key" name="nextimage.modifier_key" type="string"/>
+  </preferences>
+ 
+  <!--hbox align="center"-->
+    <label control="modifier_key_conf" value="Next Image Key Modifier: "/>
+    <radiogroup preference="modifier_key" id="modifier_key_conf">
+        <radio id="shift_alt" label="Shift+Alt" value="shift alt" />
+        <radio id="shift" label="Shift" value="shift" />
+        <radio id="ctrl" label="Control" value="control" />
+        <radio id="meta" label="Meta (Cmd)" value="meta" />
+    </radiogroup>
+    <description>You may need to restart Firefox for any change to take effect.</description>
+  <!--/hbox-->
+</prefpane>
+</prefwindow>
+

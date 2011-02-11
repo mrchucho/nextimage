@@ -1,0 +1,2 @@
+content nextimage   chrome/content/
+overlay chrome://browser/content/browser.xul    chrome://nextimage/content/nextimage.xul
